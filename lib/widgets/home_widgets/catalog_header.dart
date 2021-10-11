@@ -7,9 +7,8 @@ class CatalogHedaer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      //crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        "City Petro".text.xl2.bold.color(context.theme.canvasColor).make(),
         "Hello, Arpan!".text.xl4.bold.gray100.make()
       ],
     );

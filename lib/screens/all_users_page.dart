@@ -13,7 +13,7 @@ class AllUsersPage extends StatelessWidget {
         title: "All Users".text.make(),
         actions: [ IconButton(
             icon: const Icon(Icons.add),         
-            onPressed: () =>Navigator.pushNamed(context, MyRoutes.createUser)
+            onPressed: () =>Navigator.of(context).pushNamed(MyRoutes.createUser)
           ),]
       ),
       backgroundColor: context.canvasColor,

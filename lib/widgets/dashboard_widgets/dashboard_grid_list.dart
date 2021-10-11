@@ -1,8 +1,6 @@
-import 'package:city_petro/models/catalog.dart';
 import 'package:city_petro/models/grid_menu.dart';
-import 'package:city_petro/screens/home_detail_page.dart';
-import 'package:city_petro/utils/routes.dart';
 import 'package:flutter/material.dart';
+import 'package:swipeable_page_route/swipeable_page_route.dart';
 import 'package:velocity_x/velocity_x.dart';
 
 class DashboardGridMenu extends StatelessWidget {
@@ -10,8 +8,7 @@ class DashboardGridMenu extends StatelessWidget {
   Widget build(BuildContext context) {
     return GridView.builder(
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2, mainAxisSpacing: 16, crossAxisSpacing: 16),
-
+          crossAxisCount: 2, mainAxisSpacing: 0, crossAxisSpacing: 0),
       itemCount: GridMenuModel.items.length,
       itemBuilder: (context, index) {
         final item = GridMenuModel.items[index];
@@ -25,7 +22,6 @@ class DashboardGridMenu extends StatelessWidget {
   }
 }
 
-
 class _GridMenuItem extends StatelessWidget {
   final GridMenuItem menuItem;
   const _GridMenuItem({Key? key, required this.menuItem}) : super(key: key);
@@ -34,25 +30,32 @@ class _GridMenuItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return VxBox(
       child: Card(
-          color: context.cardColor,
-          elevation: 0,
-          //shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-          clipBehavior: Clip.antiAlias,
-          child: InkWell(
-              onTap: () => Navigator.pushNamed(
-            context,
-            menuItem.route,
-          ),
-            child: GridTile(
-              child: MenuItemImage(
-                image: menuItem.image,
-              ),
-              footer: menuItem.title.text.center.make(),
+        color: context.cardColor,
+        elevation: 0,
+        //shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: () {
+            Navigator.push(
+              context,
+              SwipeablePageRoute(
+                 canSwipe: false,
+                builder: (context) => menuItem.screen),
+            );
+          },
+          //     onTap: () => Navigator.pushNamed(
+          //   context,
+          //   menuItem.route,
+          // ),
+          child: GridTile(
+            child: MenuItemImage(
+              image: menuItem.image,
             ),
+            footer: menuItem.title.text .textStyle(TextStyle(fontSize: 12)).center.make().py12(),
           ),
         ),
-    ).rounded.make();
-    
+      ),
+    ).make();
   }
 }
 
@@ -64,10 +67,11 @@ class MenuItemImage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Image.asset(image)
         .box
-        .rounded
+        //.rounded
         .p32
-        //.color(context.canvasColor)
+        .color(context.canvasColor)
         .make()
-        .p16();
+        .cornerRadius(10)
+        .p12();
   }
 }

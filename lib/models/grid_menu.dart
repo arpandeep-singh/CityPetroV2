@@ -1,6 +1,13 @@
 import 'dart:convert';
-
-import 'package:city_petro/utils/routes.dart';
+import 'package:city_petro/models/Load.dart';
+import 'package:city_petro/screens/add_load_page.dart';
+import 'package:city_petro/screens/admin_panel_screen.dart';
+import 'package:city_petro/screens/files_list.dart';
+import 'package:city_petro/screens/folder_list.dart';
+import 'package:city_petro/screens/reports_page.dart';
+import 'package:city_petro/screens/schedule_page.dart';
+import 'package:city_petro/screens/schedule_view.dart';
+import 'package:flutter/material.dart';
 
 class GridMenuModel {
   static final catModel = GridMenuModel._internal();
@@ -12,58 +19,44 @@ class GridMenuModel {
   static List<GridMenuItem> items = [
     GridMenuItem(
       id: 1,
-      title: "Site Maps",
-      image: "assets/images/site-maps.png",
-      route: MyRoutes.folderListRoute,
-    ),
-    GridMenuItem(
-      id: 2,
-      title: "Dip Charts",
-      image: "assets/images/dip-charts.png",
-      route: MyRoutes.folderListRoute,
-    ),
-    GridMenuItem(
-      id: 3,
       title: "Add Load",
       image: "assets/images/addLoad.png",
-      route: MyRoutes.addLoadRoute,
+      screen: AddLoad(load:new Load(date: DateTime.now())),
     ),
     GridMenuItem(
-      id: 4,
-      title: "Reports",
-      image: "assets/images/reports.png",
-      route: MyRoutes.reportsRoute,
+        id: 2,
+        title: "Reports",
+        image: "assets/images/reports.png",
+        screen: ReportsPage()),
+    GridMenuItem(
+      id: 3,
+      title: "SiteMaps",
+      image: "assets/images/site-maps.png",
+      screen: FolderListPage(type: "SiteMaps"),
+      // route: MyRoutes.folderListRoute,
     ),
     GridMenuItem(
-      id: 5,
-      title: "Invoices",
-      image: "assets/images/invoices.png",
-      route: MyRoutes.filesListRoute,
-    ),
+        id: 4,
+        title: "DipCharts",
+        image: "assets/images/dip-charts.png",
+        screen: FolderListPage(
+          type: "DipCharts",
+        )),
     GridMenuItem(
-      id: 6,
-      title: "Schedule",
-      image: "assets/images/schedule.png",
-      route: MyRoutes.scheduleRoute
-    ),
-     GridMenuItem(
-      id: 7,
-      title: "All Users",
-      image: "assets/images/schedule.png",
-      route: MyRoutes.allUsersRoute
-    ),
+        id: 5,
+        title: "Schedule",
+        image: "assets/images/schedule.png",
+        screen: SchedulePage()),
     GridMenuItem(
-      id: 8,
-      title: "Create User",
-      image: "assets/images/schedule.png",
-      route: MyRoutes.createUser
-    ),
+        id: 6,
+        title: "Invoices",
+        image: "assets/images/invoice.png",
+        screen: FilesListPage(folder: "Invoices", type: "Invoices")),
     GridMenuItem(
-      id: 9,
-      title: "Load Deatil",
-      image: "assets/images/schedule.png",
-      route: MyRoutes.loadDetailRoute
-    )
+        id: 7,
+        title: "Admin Panel",
+        image: "assets/images/server.png",
+        screen: AdminPanel()),
   ];
 
   // Get Item by ID
@@ -78,20 +71,21 @@ class GridMenuItem {
   final int id;
   final String title;
   final String image;
-  final String route;
+  //final String route;
+  final Widget screen;
 
   GridMenuItem(
       {required this.id,
       required this.title,
       required this.image,
-      required this.route});
+      required this.screen});
 
   Map<String, dynamic> toMap() {
     return {
       'id': id,
       'title': title,
       'image': image,
-      'route': route,
+      'screen': screen,
     };
   }
 
@@ -100,7 +94,7 @@ class GridMenuItem {
       id: map['id'],
       title: map['title'],
       image: map['image'],
-      route: map['route'],
+      screen: map['screen'],
     );
   }
 

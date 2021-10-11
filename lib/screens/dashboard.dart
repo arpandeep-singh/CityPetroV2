@@ -1,13 +1,10 @@
-import 'dart:convert';
-
-import 'package:city_petro/models/catalog.dart';
-import 'package:city_petro/utils/routes.dart';
+import 'package:city_petro/authenticate/user.dart';
+import 'package:city_petro/services/firebase_service.dart';
 import 'package:city_petro/widgets/dashboard_widgets/dashboard_grid_list.dart';
 import 'package:city_petro/widgets/home_widgets/catalog_header.dart';
-import 'package:city_petro/widgets/home_widgets/catalog_list.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:get_it/get_it.dart';
 import 'package:velocity_x/velocity_x.dart';
 
 class Dashboard extends StatefulWidget {
@@ -18,52 +15,68 @@ class Dashboard extends StatefulWidget {
 }
 
 class _DashboardState extends State<Dashboard> {
+  FirebaseService _firebaseService = GetIt.I.get<FirebaseService>();
   @override
   void initState() {
     super.initState();
     //loadData();
   }
 
-  // loadData() async {
-  //   await Future.delayed(Duration(seconds: 1));
-  //   var catalogJson = await rootBundle.loadString("assets/files/catalog.json");
-  //   var decodedData = jsonDecode(catalogJson);
-  //   var productsData = decodedData["products"];
-  //   CatalogModel.items =
-  //       List.from(productsData).map((item) => Item.fromMap(item)).toList();
-  //   setState(() {});
-  // }
+  void handleLogOut() async => _firebaseService.signOut();
 
   @override
   Widget build(BuildContext context) {
+    final LocalUser user = _firebaseService.myAppUser;
+
+    Widget _header() {
+      return Column(
+        children: [
+          'Hello, ${user.getFirstName()}!'.text.xl4.bold.gray100.make()
+        ],
+      );
+    }
+
     return Scaffold(
-      //appBar: AppBar(backgroundColor: Colors.white,),
-      backgroundColor: context.canvasColor,
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => Navigator.pushNamed(
-          context,
-          MyRoutes.folderListRoute,
+      appBar: AppBar(
+        title: Row(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            "City Petro".text.make(),
+            VxBox().width(5).make(),
+            "v2.1".text.sm.make()
+          ],
         ),
-        child: Icon(
-          CupertinoIcons.add,
-          color: Colors.white,
-        ),
-        backgroundColor: context.theme.buttonColor,
+        actions: [
+          IconButton(onPressed: handleLogOut, icon: Icon(Icons.logout)),
+        ],
       ),
+      backgroundColor: context.canvasColor,
       body: SafeArea(
-        child: ZStack([
-          VxBox().color(context.accentColor).make().h24(context),
-          Container(
-          padding: Vx.m24,
+          child: ZStack([
+        VxBox().color(context.accentColor).make().h20(context),
+        Container(
+          //padding: EdgeInsets.symmetric(horizontal: 20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              CatalogHedaer(),
-               DashboardGridMenu().py16().expand()
-            ],
+            children: [_header(), DashboardGridMenu().py16().expand()],
           ),
-        ),
-        ])
+        ).px20(),
+      ])),
+          bottomNavigationBar: BottomNavigationBar(
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Dashboard',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.admin_panel_settings),
+            label: 'Admin Panel',
+          ),
+         
+        ],
+        currentIndex: 0,
+        //sselectedItemColor: Colors.amber[800],
+        onTap: (index)=>{},
       ),
     );
   }

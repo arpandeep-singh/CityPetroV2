@@ -1,7 +1,11 @@
+import 'package:city_petro/services/auth.dart';
+import 'package:city_petro/services/firebase_service.dart';
 import 'package:city_petro/utils/routes.dart';
 import 'package:city_petro/widgets/themes.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:velocity_x/velocity_x.dart';
 
 class LoginPage extends StatefulWidget {
@@ -15,15 +19,40 @@ class _LoginPageState extends State<LoginPage> {
 
   final _formKey = GlobalKey<FormState>();
 
-  moveToHome(BuildContext context) async {
-    if (_formKey.currentState!.validate()) {
+  FirebaseService _firebaseService = GetIt.I.get<FirebaseService>();
+  String email = "";
+  String password = "";
+  bool loading = false;
+
+  void showMessage(String message, MaterialColor color) {
+    ScaffoldMessenger.of(context).showSnackBar(new SnackBar(
+      backgroundColor: color,
+      content: new Text(message),
+      duration: Duration(milliseconds: 1500),
+    ));
+  }
+
+  trySignIn() async {
+    _formKey.currentState!.validate();
+    if (mounted) {
       setState(() {
-        changeButton = true;
+        loading = true;
+      
       });
-      await Future.delayed(Duration(milliseconds: 500));
-      await Navigator.pushNamed(context, MyRoutes.dashboardRoute);
+    }
+    try {
+      String uid = await _firebaseService.signIn(email, password);
+      // if (!uid.isEmptyOrNull) {
+      //   print("Login Success: " + uid);
+      //   await Navigator.pushNamed(context, MyRoutes.dashboardRoute);
+      // }
+    } on FirebaseAuthException catch (e) {
+      showMessage("Login Failed!", Colors.red);
+      print("Login Failed " + e.message!);
+    }
+    if (mounted) {
       setState(() {
-        changeButton = false;
+        loading = false;
       });
     }
   }
@@ -32,9 +61,10 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        //backgroundColor: Colors.transparent,
       ),
       backgroundColor: Color(0xff3366ff),
+      //backgroundColor: context.cardColor,
       body: SafeArea(
         child: SingleChildScrollView(
           child: Form(
@@ -42,88 +72,94 @@ class _LoginPageState extends State<LoginPage> {
             child: Column(
               children: [
                 "City Petro".text.xl6.bold.color(context.cardColor).make(),
+                "LOGIN".text.xl2.bold.color(context.cardColor).make(),
                 SizedBox(
                   height: 20.0,
                 ),
-                Column(
-                  children: [
-                    Container(
-                      color: Color(0xff254EDB),
-                      child: TextFormField(
-                        style: TextStyle(color: Colors.white),
-                        decoration: InputDecoration(
-                          hintStyle: TextStyle(color: Colors.white),
-                          hintText: "Email Address",
-                          //labelText: "Username",
-
-                          contentPadding: EdgeInsets.all(16),
-                          border: InputBorder.none,
-                          focusedBorder: InputBorder.none,
-                          enabledBorder: InputBorder.none,
-                          errorBorder: InputBorder.none,
-                          disabledBorder: InputBorder.none,
-                          fillColor: Color(0xff1b66a9),
-                        ),
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return "Email cannot be empty";
-                          }
-
-                          return null;
-                        },
-                        onChanged: (value) {
-                          name = value;
-                          setState(() {});
-                        },
-                      ),
-                    ).py12(),
-                    Container(
-                      color: Color(0xff254EDB),
-                      child: TextFormField(
-                        obscureText: true,
-                        style: TextStyle(color: Colors.white),
-                        decoration: InputDecoration(
-                          hintStyle: TextStyle(color: Colors.white),
-                          hintText: "Password",
-                          //labelText: "Username",
-
-                          contentPadding: EdgeInsets.all(16),
-                          border: InputBorder.none,
-                          focusedBorder: InputBorder.none,
-                          enabledBorder: InputBorder.none,
-                          errorBorder: InputBorder.none,
-                          disabledBorder: InputBorder.none,
-                          fillColor: Color(0xff1b66a9),
-                        ),
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return "Password cannot be empty";
-                          } else if (value.length < 6) {
-                            return "Password length should be atleast 6";
-                          }
-
-                          return null;
-                        },
-                      ),
-                    ).py12(),
-                    SizedBox(
-                      height: 40.0,
-                    ),
-                    CupertinoButton.filled(
-                      //color: Color(0xff091A7A),
-                      child: "SIGN IN".text.bold.make(),
-                      onPressed: () {
-                        Navigator.pushNamed(context, MyRoutes.dashboardRoute);
-                      },
-                      borderRadius: BorderRadius.circular(0),
-                    ).wFull(context),
-                  ],
-                ).p16(),
                 Container(
-                  //alignment: Alignment.bottomCenter,
-                  child: "v1.0.5".text.color(context.cardColor).make(),
-                  //color: Colors.amber,
-                )
+                  color: Colors.white,
+
+                  child: Column(
+                    children: [
+                      Container(
+                         color: Colors.grey[200],
+                        //color: context.accentColor.withOpacity(0.8),
+                        child: TextFormField(
+                          style: TextStyle(fontSize: 12),
+                          decoration: InputDecoration(
+                            //hintStyle: TextStyle(color: Colors.white),
+                            hintText: "Email Address",
+                            border: InputBorder.none,
+                            focusedBorder: InputBorder.none,
+                           enabledBorder: InputBorder.none,
+                           disabledBorder: InputBorder.none,
+                            //fillColor: Color(0xff1b66a9),
+                            contentPadding: EdgeInsets.all(16),
+                          ),
+                          validator: (value) {
+                            if (value!.isEmpty) {
+                              return "Email cannot be empty";
+                            }
+
+                            return null;
+                          },
+                          onChanged: (value) {
+                            setState(() {
+                              email = value;
+                            });
+                          },
+                        ),
+                      ).py12(),
+                      Container(
+                        color: Colors.grey[200],
+                        child: TextFormField(
+                           style: TextStyle(fontSize: 12),
+                          obscureText: true,
+                          decoration:InputDecoration(
+                            hintText: "Password",
+                            contentPadding: EdgeInsets.all(16),
+                           border: InputBorder.none,
+                            focusedBorder: InputBorder.none,
+                           enabledBorder: InputBorder.none,
+                           disabledBorder: InputBorder.none,
+                            //fillColor: Color(0xff1b66a9),
+                          ), 
+                          
+                          validator: (value) {
+                            if (value!.isEmpty) {
+                              return "Password cannot be empty";
+                            } else if (value.length < 6) {
+                              return "Password length should be atleast 6";
+                            }
+
+                            return null;
+                          },
+                          onChanged: (value) {
+                            setState(() {
+                              password = value;
+                            });
+                          },
+                        ),
+                      ).py12(),
+                      SizedBox(
+                        height: 20.0,
+                      ),
+                      CupertinoButton.filled(
+                        //color: Color(0xff091A7A),
+                        
+                        child: "SIGN IN".text.bold.make(),
+                        onPressed: trySignIn,
+
+                        borderRadius: BorderRadius.circular(5),
+                      ).wFull(context),
+                    ],
+                  ).p16(),
+                ).cornerRadius(10).px16().py20(),
+                loading
+                    ? CircularProgressIndicator(
+                        color: context.cardColor,
+                      )
+                    : Container(),
               ],
             ),
           ),

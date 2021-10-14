@@ -1,4 +1,4 @@
-import 'package:city_petro/models/PdfDoc.dart';
+import 'package:CityPetro/models/PdfDoc.dart';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 import 'package:velocity_x/velocity_x.dart';

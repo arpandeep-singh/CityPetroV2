@@ -1,4 +1,4 @@
-import 'package:city_petro/models/City.dart';
+import 'package:CityPetro/models/City.dart';
 
 class Site {
   String stationID;

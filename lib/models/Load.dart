@@ -1,5 +1,9 @@
-import 'package:city_petro/models/Site.dart';
+import 'package:CityPetro/models/Site.dart';
+import 'package:CityPetro/services/firebase_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:get_it/get_it.dart';
+
+FirebaseService _firebaseService = GetIt.I.get<FirebaseService>();
 
 class Load {
   DateTime date = DateTime.now();
@@ -18,7 +22,7 @@ class Load {
   String comments = "";
   int documents = 0;
   bool isOnHold = false;
-  String cpPdfLink = "";
+  //String cpPdfLink = "";
   //Firebase use only
   String docId = "";
   double HST = 0.0;
@@ -60,6 +64,7 @@ class Load {
         ((load.waitingCost + load.baseRate + load.splitCost) + load.HST);
 
     load.docId = docId;
+    load.isOnHold = json['isOnHold'] ?? false;
     return load;
   }
 
@@ -67,12 +72,11 @@ class Load {
     Load load = Load.fromNewJson(json);
     load.splitLoads = json['splitLoads'] ?? 0;
     load.documents = int.parse(json['documents']?.toString() ?? "0");
-    ;
     load.uptLink = json['uptLink'] ?? "";
     load.terminal = json['terminal'] ?? "";
     load.comments = json['comments'] ?? "NA";
     load.waitingTime = int.parse(json['waitingTime']?.toString() ?? "0");
-    load.cpPdfLink = json['pdfLink'] ?? "";
+    //load.cpPdfLink = json['pdfLink'] ?? "";
     return load;
   }
 
@@ -92,7 +96,9 @@ class Load {
     data['comments'] = this.comments;
     data['documents'] = this.documents;
     data['waitingTime'] = this.waitingTime;
-    data['pdfLink'] = this.cpPdfLink;
+    data['userId'] = _firebaseService.myAppUser.uid;
+    data['isOnHold'] = this.isOnHold;
+    //data['pdfLink'] = this.cpPdfLink;
     return data;
   }
 

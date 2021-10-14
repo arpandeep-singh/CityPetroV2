@@ -3,17 +3,17 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:city_petro/authenticate/UserInfo.dart' as UserData;
-import 'package:city_petro/authenticate/user.dart';
-import 'package:city_petro/models/City.dart';
-import 'package:city_petro/models/Load.dart';
-import 'package:city_petro/models/PdfDoc.dart';
-import 'package:city_petro/models/ReportConfig.dart';
-import 'package:city_petro/models/Shift.dart';
-import 'package:city_petro/models/Site.dart';
-import 'package:city_petro/models/Station.dart';
-import 'package:city_petro/models/admin/master_city.dart';
-import 'package:city_petro/models/migration/Doc.dart';
+import 'package:CityPetro/authenticate/UserInfo.dart' as UserData;
+import 'package:CityPetro/authenticate/user.dart';
+import 'package:CityPetro/models/City.dart';
+import 'package:CityPetro/models/Load.dart';
+import 'package:CityPetro/models/PdfDoc.dart';
+import 'package:CityPetro/models/ReportConfig.dart';
+import 'package:CityPetro/models/Shift.dart';
+import 'package:CityPetro/models/Site.dart';
+import 'package:CityPetro/models/Station.dart';
+import 'package:CityPetro/models/admin/master_city.dart';
+import 'package:CityPetro/models/migration/Doc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -48,6 +48,14 @@ class FirebaseService {
   Future<void> signOut() => _firebaseAuth.signOut();
 
   LocalUser get myAppUser => _userFromFirebaseUser(_firebaseAuth.currentUser!);
+
+  Future<bool> get isUserAdmin async {
+    var doc =
+        await _firestore.collection("Users").doc(this.myAppUser.uid).get();
+    var isAdmin = doc.data()?['isAdmin'] ?? false;
+    print('User is Admin? $isAdmin');
+    return isAdmin;
+  }
 
   // //signout
   // Future signOut() async {
@@ -96,9 +104,10 @@ class FirebaseService {
   Future<List<Load>> getAllLoads(DateTime from, DateTime to) async {
     print('From Date: ${from.toLocal()} To: ${to.toLocal()}');
     var qds = await _firestore
-        .collection("Users")
-        .doc(this.myAppUser.uid)
+        //.collection("Users")
+        //.doc(this.myAppUser.uid)
         .collection("Loads")
+        .where('userId', isEqualTo: this.myAppUser.uid)
         .where('date', isGreaterThanOrEqualTo: from)
         .where('date', isLessThanOrEqualTo: to)
         .get();
@@ -110,8 +119,8 @@ class FirebaseService {
 
   Future<Load> getSingleLoad(String docId) async {
     var ds = await _firestore
-        .collection("Users")
-        .doc(this.myAppUser.uid)
+        //.collection("Users")
+        //.doc(this.myAppUser.uid)
         .collection("Loads")
         .doc(docId)
         .get();
@@ -133,19 +142,25 @@ class FirebaseService {
   }
 
   Future<void> deleteSingleStation(String cityId, String stationId) async {
-    return await _firestore.collection("Cities").doc(cityId).collection("Stations").doc(stationId).delete();
+    return await _firestore
+        .collection("Cities")
+        .doc(cityId)
+        .collection("Stations")
+        .doc(stationId)
+        .delete();
   }
 
-
-
   Future<String> createNewUser(UserData.UserInfo info) async {
-    FirebaseApp app = await Firebase.initializeApp(
-        name: 'Secondary', options: Firebase.app().options);
+    //print('User : ${info.}');
+    // FirebaseApp app = await Firebase.initializeApp(
+    //     name: 'SecondaryApp', options: Firebase.app().options);
     //Create User
-    UserCredential userInfo = await FirebaseAuth.instanceFor(app: app)
-        .createUserWithEmailAndPassword(
+    UserCredential userInfo =
+        await _firebaseAuth.createUserWithEmailAndPassword(
             email: info.email, password: info.password);
+    //await FirebaseAuth.instanceFor(app: app)
 
+    //this._firebaseAuth.currentUser.
     // Store important info
     await userInfo.user
         ?.updateDisplayName('${info.firstName}#${info.lastName}#${info.level}');
@@ -156,6 +171,7 @@ class FirebaseService {
         .doc(userInfo.user?.uid)
         .set(info.toJson());
 
+    //await app.delete();
     return userInfo.user!.uid;
   }
 
@@ -233,31 +249,43 @@ class FirebaseService {
     return ReportConfig.fromJson(ds.data()!, level);
   }
 
-  Future<String> encodeBytes(File file) async {
+  Future<String> encodeBytes(XFile file) async {
     Uint8List bytes = await file.readAsBytes();
     String base64Image = "data:image/jpeg;base64," + base64Encode(bytes);
     return base64Image;
   }
 
-  Future<UptResponse> sendToUpt(File file, String url) async {
+  Future<UptResponse> sendToUpt(XFile file, String url) async {
     String encodedFile = await encodeBytes(file);
     Dio dio = new Dio();
-    String postUrl =
-        "https://gw.upt.cloud:8081/upload?user=SINGH--HARW&sd=293892";
-    //TODO: extract sd and driver name from postUrl
-    Response response = await dio.post(postUrl, data: {"img": encodedFile});
-    print('UPt Response ${response.toString()}');
-    if (response.statusCode != 200) {
-      return new UptResponse(status: response.statusCode!);
+    Uri postUri = Uri.parse(url.trim());
+    var user = postUri.queryParameters['dn'];
+    var shiftID = postUri.queryParameters['sd'];
+
+    String postUrl = 'https://gw.upt.cloud:8081/upload3444?user=$user&sd=$shiftID';
+    print('postUrl: $postUrl');
+    //throw new DioError(requestOptions: postUrl);
+    try {
+      Response response = await dio.post(postUrl, data: {"img": encodedFile});
+      print('UPt Response ${response.toString()}');
+      if (response.statusCode != 200) {
+        return new UptResponse(status: response.statusCode!);
+      }
+
+      Map<String, dynamic> responseJson = jsonDecode(response.toString());
+      String remoteLink = responseJson["result"]["main"]["remote"];
+      String localLink = responseJson["result"]["main"]["local"];
+      String completeURL = 'https://gw.upt.cloud:8081/$localLink';
+      return new UptResponse(
+          status: response.statusCode!,
+          localLink: completeURL,
+          remoteLink: remoteLink);
+    } on DioError catch (e) {
+      return new UptResponse(
+          status: -1,
+          localLink: 'CP SERVER ISSUEe}',
+          remoteLink: e.error.toString());
     }
-    Map<String, dynamic> responseJson = jsonDecode(response.toString());
-    String remoteLink = responseJson["result"]["main"]["remote"];
-    String localLink = responseJson["result"]["main"]["local"];
-    String completeURL = 'https://gw.upt.cloud:8081/$localLink';
-    return new UptResponse(
-        status: response.statusCode!,
-        localLink: completeURL,
-        remoteLink: remoteLink);
   }
 
   Future<String> uploadPdfToCP(String pdfPath) async {
@@ -275,24 +303,29 @@ class FirebaseService {
     //return storage.getDownloadURL();
   }
 
-  Future<String> submitLoad(Load load, List<File> files, String pdfPath) async {
+  Future<String> submitLoad(Load load, List<XFile> files) async {
     //Send docs to upt and store response URLs
     List<UptResponse> uploadedDocResponses = [];
-    // if (files.isNotEmpty) {
-    //   uploadedDocResponses = await Future.wait(files
-    //       .map((file) async => await sendToUpt(file, load.uptLink))
-    //       .toList());
-    // }
+    if (files.isNotEmpty) {
+      try {
+        uploadedDocResponses = await Future.wait(files
+            .map((file) async => await sendToUpt(file, load.uptLink))
+            .toList());
+      } on DioError catch (err) {
+        //throw err;
+        print('Paperwork not sent');
+      }
+    }
 
     load.documents = files.length;
 
     // Store combined pdf in firebase storage
-    load.cpPdfLink = await uploadPdfToCP(pdfPath);
+    //load.cpPdfLink = await uploadPdfToCP(pdfPath);
 
     // Save data to City Petro
     DocumentReference doc = await _firestore
-        .collection("Users")
-        .doc(this.myAppUser.uid)
+        //.collection("Users")
+        //.doc(this.myAppUser.uid)
         .collection("Loads")
         .add(load.toJson());
 

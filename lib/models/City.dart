@@ -1,5 +1,5 @@
-import 'package:city_petro/models/Site.dart';
-import 'package:city_petro/utils/extensions.dart';
+import 'package:CityPetro/models/Site.dart';
+import 'package:CityPetro/utils/extensions.dart';
 
 class City {
   String name;

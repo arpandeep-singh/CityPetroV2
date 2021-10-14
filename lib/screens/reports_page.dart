@@ -1,6 +1,6 @@
-import 'package:city_petro/models/Load.dart';
-import 'package:city_petro/models/Report.dart';
-import 'package:city_petro/screens/load_detail_page.dart';
+import 'package:CityPetro/models/Load.dart';
+import 'package:CityPetro/models/Report.dart';
+import 'package:CityPetro/screens/load_detail_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -277,15 +277,16 @@ class _ReportsPageState extends State<ReportsPage> {
                         itemCount: summary.loads.length,
                         //sphysics: BouncingScrollPhysics(),
                         itemBuilder: (context, index) {
-                          DateTime loadDate = summary.loads[index].date;
+                          //DateTime loadDate = summary.loads[index].date;
+                          Load load = summary.loads[index];
                           return Slidable(
                             actionPane: SlidableDrawerActionPane(),
                             actionExtentRatio: 0.2,
                             child: GestureDetector(
                               onTap: () =>
-                                  openDetailScreen(summary.loads[index]),
+                                  openDetailScreen(load),
                               onLongPress: () {
-                                showDeleteDialog(summary.loads[index]);
+                                showDeleteDialog(load);
                               },
                               child: VxBox(
                                       child: Row(
@@ -293,13 +294,13 @@ class _ReportsPageState extends State<ReportsPage> {
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   VStack([
-                                    loadDate.myDateFormat.text
+                                    load.date.myDateFormat.text
                                         .textStyle(context.captionStyle!)
                                         .make(),
                                     HStack([
                                       VxBox(
                                               child:
-                                                  '${summary.loads[index].stationId}'
+                                                  '${load.stationId}'
                                                       .text
                                                       .textStyle(style())
                                                       .make()
@@ -311,7 +312,7 @@ class _ReportsPageState extends State<ReportsPage> {
                                       // VxBox().width(5).make(),
                                       VxBox(
                                               child:
-                                                  '${summary.loads[index].city}'
+                                                  '${load.city}'
                                                       .text
                                                       .textStyle(style())
                                                       .make()
@@ -321,9 +322,10 @@ class _ReportsPageState extends State<ReportsPage> {
                                               Color(0xB78A0A).withOpacity(0.2))
                                           .cornerRadius(5)
                                           .px(5),
+                                      load.isOnHold? Icon(Icons.warning, color: Colors.yellow[600],):Container()
                                     ]),
                                   ]),
-                                  '\$${summary.loads[index].totalCostWithHST.toStringAsFixed(2)}'
+                                  '\$${load.totalCostWithHST.toStringAsFixed(2)}'
                                       .text
                                       .textStyle(TextStyle(fontSize: 12))
                                       .bold
@@ -334,7 +336,7 @@ class _ReportsPageState extends State<ReportsPage> {
                               ).py(10).px(20))
                                   .color(context.cardColor)
                                   .make(),
-                            ).cornerRadius(10).px(10),
+                            ).cornerRadius(0).px(10),
                             // actions: [
                             //   IconSlideAction(
                             //       caption: 'Delete',
@@ -349,7 +351,7 @@ class _ReportsPageState extends State<ReportsPage> {
                                   color: Colors.red,
                                   icon: Icons.delete,
                                   onTap: () =>
-                                      showDeleteDialog(summary.loads[index])),
+                                      showDeleteDialog(load)),
                             ],
                           );
                         }).expand(),

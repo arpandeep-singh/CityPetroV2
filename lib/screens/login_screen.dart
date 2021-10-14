@@ -1,7 +1,4 @@
-import 'package:city_petro/services/auth.dart';
-import 'package:city_petro/services/firebase_service.dart';
-import 'package:city_petro/utils/routes.dart';
-import 'package:city_petro/widgets/themes.dart';
+import 'package:CityPetro/services/firebase_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

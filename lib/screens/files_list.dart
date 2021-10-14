@@ -1,8 +1,8 @@
-import 'package:city_petro/models/Folder.dart';
-import 'package:city_petro/models/PdfDoc.dart';
-import 'package:city_petro/screens/load_detail_page.dart';
-import 'package:city_petro/screens/pdf_view_page.dart';
-import 'package:city_petro/services/firebase_service.dart';
+import 'package:CityPetro/models/Folder.dart';
+import 'package:CityPetro/models/PdfDoc.dart';
+import 'package:CityPetro/screens/load_detail_page.dart';
+import 'package:CityPetro/screens/pdf_view_page.dart';
+import 'package:CityPetro/services/firebase_service.dart';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

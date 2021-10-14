@@ -1,5 +1,5 @@
-import 'package:city_petro/models/Station.dart';
-import 'package:city_petro/services/firebase_service.dart';
+import 'package:CityPetro/models/Station.dart';
+import 'package:CityPetro/services/firebase_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';

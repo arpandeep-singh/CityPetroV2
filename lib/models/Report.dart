@@ -1,5 +1,5 @@
-import 'package:city_petro/models/Load.dart';
-import 'package:city_petro/services/firebase_service.dart';
+import 'package:CityPetro/models/Load.dart';
+import 'package:CityPetro/services/firebase_service.dart';
 import 'package:get_it/get_it.dart';
 
 FirebaseService _firebaseService = GetIt.I.get<FirebaseService>();
@@ -20,9 +20,11 @@ class Report {
 
     this.loads = await _firebaseService.getAllLoads(this.fromDate, this.toDate);
     loads.forEach((load) {
+      if(!load.isOnHold){
       totalEarnings += load.totalCostWithHST;
       totalHST += load.HST;
       totalWaiting += load.waitingCost;
+      }
     });
     return;
   }

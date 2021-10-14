@@ -1,7 +1,7 @@
-import 'package:city_petro/models/Load.dart';
-import 'package:city_petro/models/PdfDoc.dart';
-import 'package:city_petro/screens/pdf_view_page.dart';
-import 'package:city_petro/services/firebase_service.dart';
+import 'package:CityPetro/models/Load.dart';
+import 'package:CityPetro/models/PdfDoc.dart';
+import 'package:CityPetro/screens/pdf_view_page.dart';
+import 'package:CityPetro/services/firebase_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
@@ -115,7 +115,16 @@ class _DataSectionState extends State<DataSection> {
   @override
   Widget build(BuildContext context) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        this.widget.load.isOnHold? VxBox(
+          child: Container(
+            child: HStack([
+              Icon(Icons.warning, color:Colors.yellow[600]).pOnly(right: 5),
+              "This load has been put on hold by the admin".text.textStyle(TextStyle(fontSize: 12)).make(),
+            ])
+          ).p12(),
+        ).color(context.cardColor).make().cornerRadius(0).pOnly(bottom: 10):Container(),
         VxBox(
           child: Container(
             child: Column(
@@ -163,43 +172,43 @@ class _DataSectionState extends State<DataSection> {
                       ? "NA"
                       : widget.load.comments,
                 ),
-                widget.load.cpPdfLink.isNotEmpty
-                    ? Column(
-                        children: [
-                          Container(
-                            child: Row(
-                              children: <Widget>[
-                                Container(
-                                  //alignment: Alignment.centerRight,
-                                  child: "Paperwork"
-                                      .text
-                                      .textStyle(TextStyle(fontSize: 12))
-                                      .make(),
-                                ).expand(),
-                                VxBox(
-                                    child: IconButton(
-                                  icon: Icon(Icons.arrow_forward_rounded),
-                                  onPressed: () {
-                                    Navigator.push(
-                                        context,
-                                        SwipeablePageRoute(
-                                            canSwipe: false,
-                                            builder: (context) => PdfViewerPage(
-                                                  doc: PdfDoc(
-                                                      name: "Paperwork",
-                                                      url: widget
-                                                          .load.cpPdfLink),
-                                                )));
-                                  },
-                                )).make().px(5)
-                              ],
-                            ),
-                          ),
-                          VxBox().make().h(10),
-                          // VxBox().make().h(15),
-                        ],
-                      )
-                    : Container(),
+                // widget.load.cpPdfLink.isNotEmpty
+                //     ? Column(
+                //         children: [
+                //           Container(
+                //             child: Row(
+                //               children: <Widget>[
+                //                 Container(
+                //                   //alignment: Alignment.centerRight,
+                //                   child: "Paperwork"
+                //                       .text
+                //                       .textStyle(TextStyle(fontSize: 12))
+                //                       .make(),
+                //                 ).expand(),
+                //                 VxBox(
+                //                     child: IconButton(
+                //                   icon: Icon(Icons.arrow_forward_rounded),
+                //                   onPressed: () {
+                //                     Navigator.push(
+                //                         context,
+                //                         SwipeablePageRoute(
+                //                             canSwipe: false,
+                //                             builder: (context) => PdfViewerPage(
+                //                                   doc: PdfDoc(
+                //                                       name: "Paperwork",
+                //                                       url: widget
+                //                                           .load.cpPdfLink),
+                //                                 )));
+                //                   },
+                //                 )).make().px(5)
+                //               ],
+                //             ),
+                //           ),
+                //           VxBox().make().h(10),
+                //           // VxBox().make().h(15),
+                //         ],
+                //       )
+                //     : Container(),
               ],
             ).p20(),
           ).px12(),

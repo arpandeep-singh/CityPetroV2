@@ -1,6 +1,6 @@
-import 'package:city_petro/screens/files_list.dart';
-import 'package:city_petro/services/firebase_service.dart';
-import 'package:city_petro/widgets/themes.dart';
+import 'package:CityPetro/screens/files_list.dart';
+import 'package:CityPetro/services/firebase_service.dart';
+import 'package:CityPetro/widgets/themes.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';

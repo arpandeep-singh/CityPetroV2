@@ -1,4 +1,4 @@
-import 'package:city_petro/services/firebase_service.dart';
+import 'package:CityPetro/services/firebase_service.dart';
 import 'package:get_it/get_it.dart';
 
 FirebaseService _firebaseService = GetIt.I.get<FirebaseService>();

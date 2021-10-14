@@ -1,20 +1,16 @@
-import 'package:city_petro/authenticate/user.dart';
-import 'package:city_petro/authenticate/wrapper.dart';
-import 'package:city_petro/core/store.dart';
-import 'package:city_petro/screens/add_load_page.dart';
-import 'package:city_petro/screens/create_user.dart';
-import 'package:city_petro/screens/dashboard.dart';
-import 'package:city_petro/screens/login_screen.dart';
-import 'package:city_petro/screens/schedule_page.dart';
-import 'package:city_petro/screens/splash_screen.dart';
-import 'package:city_petro/services/firebase_service.dart';
-import 'package:city_petro/utils/routes.dart';
+import 'package:CityPetro/core/store.dart';
+import 'package:CityPetro/screens/create_user.dart';
+import 'package:CityPetro/screens/dashboard.dart';
+import 'package:CityPetro/screens/login_screen.dart';
+import 'package:CityPetro/screens/schedule_page.dart';
+import 'package:CityPetro/services/firebase_service.dart';
+import 'package:CityPetro/utils/routes.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:provider/provider.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:velocity_x/velocity_x.dart';
 import 'widgets/themes.dart';
 
@@ -53,19 +49,28 @@ class MyApp extends StatelessWidget {
               stream: _firebaseService.authStateChanges(),
               builder: (_, _snapshot) {
                 bool isSignedIn = _snapshot.data != null;
+                // bool isAdmin = false;
+                // if (isSignedIn) {
+                //   isAdmin = !_snapshot.data!.displayName!
+                //       .toString()
+                //       .toLowerCase()
+                //       .contains("admin");
+                // }
+
                 return FutureBuilder(
-                  future: Future.delayed(Duration(milliseconds: 800)),
-                  builder: (context, ss) {
-                  if (ss.connectionState == ConnectionState.waiting) {
-                    return Splash();
-                  } else {
-                    return isSignedIn ? Dashboard() : LoginPage();
-                  }
-                });
+                    future: Startup.instance.checkUserAdmin(isSignedIn),
+                    builder: (context, AsyncSnapshot<void> ss) {
+                      //bool isAdmin = ss.data != null ? ss.data! : false;
+                      if (ss.connectionState == ConnectionState.waiting) {
+                        return Splash();
+                      } else {
+                        return isSignedIn ? Dashboard() : LoginPage();
+                      }
+                    });
               },
             ),
             routes: {
-              MyRoutes.dashboardRoute: (context) => Dashboard(),
+              //MyRoutes.dashboardRoute: (context) => Dashboard(isAdmin: isAdmin),
               //MyRoutes.addLoadRoute: (context) => AddLoad(),
               MyRoutes.createUser: (context) => CreateUserPage(),
               MyRoutes.scheduleRoute: (context) => SchedulePage()
@@ -145,8 +150,6 @@ class PleaseWait extends StatelessWidget {
   }
 }
 
-
-
 class Init {
   Init._();
   static final instance = Init._();
@@ -160,5 +163,32 @@ class Init {
 
     // artificial delay
     await Future.delayed(const Duration(milliseconds: 500));
+  }
+}
+
+class Startup {
+  Startup._();
+  static final instance = Startup._();
+  bool userAdmin = false;
+  String localVersion = "";
+  FirebaseService _firebaseService = GetIt.I.get<FirebaseService>();
+  Future<void> checkUserAdmin(bool isSignedIn) async {
+
+    if (isSignedIn) {
+      
+      bool isAdmin = await _firebaseService.isUserAdmin;
+      this.setUserAdmin = isAdmin;
+
+      PackageInfo packageInfo = await PackageInfo.fromPlatform();  
+      this.localVersion = packageInfo.version;
+    
+    }
+    
+    await Future.delayed(Duration(milliseconds: 800));
+  }
+
+  bool get getUserRole => userAdmin;
+  set setUserAdmin(bool isAdmin) {
+    userAdmin = isAdmin;
   }
 }

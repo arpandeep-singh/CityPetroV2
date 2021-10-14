@@ -1,5 +1,5 @@
-import 'package:city_petro/screens/admin-panel/all_cities.dart';
-import 'package:city_petro/screens/create_user.dart';
+import 'package:CityPetro/screens/admin-panel/all_cities.dart';
+import 'package:CityPetro/screens/create_user.dart';
 import 'package:flutter/material.dart';
 import 'package:swipeable_page_route/swipeable_page_route.dart';
 import 'package:velocity_x/velocity_x.dart';

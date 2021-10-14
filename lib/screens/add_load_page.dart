@@ -1,20 +1,16 @@
 import 'dart:io';
 
-import 'package:city_petro/models/Load.dart';
-import 'package:city_petro/models/ReportConfig.dart';
-import 'package:city_petro/models/Site.dart';
-import 'package:city_petro/screens/admin-panel/add_load_overlay.dart';
-import 'package:city_petro/screens/admin-panel/upload_screen_overlay.dart';
-import 'package:city_petro/services/firebase_service.dart';
+import 'package:CityPetro/models/Load.dart';
+import 'package:CityPetro/models/ReportConfig.dart';
+import 'package:CityPetro/models/Site.dart';
+import 'package:CityPetro/screens/admin-panel/upload_screen_overlay.dart';
+import 'package:CityPetro/services/firebase_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_genius_scan/flutter_genius_scan.dart';
 import 'package:get_it/get_it.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:open_file/open_file.dart';
 import 'package:select_dialog/select_dialog.dart';
-import 'package:swipeable_page_route/swipeable_page_route.dart';
 import 'package:velocity_x/velocity_x.dart';
 
 class AddLoad extends StatefulWidget {
@@ -61,29 +57,29 @@ class _AddLoadState extends State<AddLoad> {
     String fileSource = source == ImageSource.camera ? 'camera' : 'image';
     scanDocument(fileSource);
 
-    // final ImagePicker _picker = ImagePicker();
-    // XFile? file = await _picker.pickImage(source: source);
-    // if (file != null) {
-    //   setState(() {
-    //     files.add(file);
-    //   });
-    // }
+    final ImagePicker _picker = ImagePicker();
+    XFile? file = await _picker.pickImage(source: source);
+    if (file != null) {
+      setState(() {
+        files.add(file);
+      });
+    }
   }
 
   void scanDocument(String source) {
-    FlutterGeniusScan.scanWithConfiguration({
-      'source': 'camera',
-      'multiPage': true,
-    }).then((result) {
-      this.pdfFileForCp = trimFilePath(result['pdfUrl']);
-      List<Map<String, dynamic>> images = result['scans'];
-      this.filesForUpt = images.map((img) {
-        String imagePath = trimFilePath(img['enhancedUrl']);
-        return new File(imagePath);
-      }).toList();
-      // OpenFile.open(pdfFileForCp).then((result) => debugPrint(result.message),
-      //     onError: (error) => displayError(context, error));
-    }, onError: (error) => displayError(context, error));
+    // FlutterGeniusScan.scanWithConfiguration({
+    //   'source': 'camera',
+    //   'multiPage': true,
+    // }).then((result) {
+    //   this.pdfFileForCp = trimFilePath(result['pdfUrl']);
+    //   List<Map<String, dynamic>> images = result['scans'];
+    //   this.filesForUpt = images.map((img) {
+    //     String imagePath = trimFilePath(img['enhancedUrl']);
+    //     return new File(imagePath);
+    //   }).toList();
+    //   // OpenFile.open(pdfFileForCp).then((result) => debugPrint(result.message),
+    //   //     onError: (error) => displayError(context, error));
+    // }, onError: (error) => displayError(context, error));
   }
 
   String trimFilePath(String path) => path.replaceAll("file://", '');
@@ -122,8 +118,7 @@ class _AddLoadState extends State<AddLoad> {
         opaque: false,
         pageBuilder: (BuildContext context, _, __) => UploadOverlayScreen(
               load: this.load,
-              files: this.filesForUpt,
-              pdfPath: this.pdfFileForCp,
+              files: this.files,
             )));
   }
 

@@ -1,10 +1,10 @@
-import 'package:city_petro/models/Shift.dart';
-import 'package:city_petro/services/firebase_service.dart';
+import 'package:CityPetro/models/Shift.dart';
+import 'package:CityPetro/services/firebase_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:velocity_x/velocity_x.dart';
-import 'package:city_petro/models/Load.dart';
+import 'package:CityPetro/models/Load.dart';
 
 class SchedulePage extends StatefulWidget {
   const SchedulePage({Key? key}) : super(key: key);

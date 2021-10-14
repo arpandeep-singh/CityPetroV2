@@ -1,5 +1,5 @@
-import 'package:city_petro/models/admin/master_city.dart';
-import 'package:city_petro/services/firebase_service.dart';
+import 'package:CityPetro/models/admin/master_city.dart';
+import 'package:CityPetro/services/firebase_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';

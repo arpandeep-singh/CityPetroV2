@@ -1,14 +1,17 @@
-import 'package:city_petro/authenticate/user.dart';
-import 'package:city_petro/services/firebase_service.dart';
-import 'package:city_petro/widgets/dashboard_widgets/dashboard_grid_list.dart';
-import 'package:city_petro/widgets/home_widgets/catalog_header.dart';
+import 'package:CityPetro/authenticate/user.dart';
+import 'package:CityPetro/main.dart';
+import 'package:CityPetro/services/firebase_service.dart';
+import 'package:CityPetro/widgets/dashboard_widgets/dashboard_grid_list.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:velocity_x/velocity_x.dart';
 
 class Dashboard extends StatefulWidget {
-  const Dashboard({Key? key}) : super(key: key);
+  //final bool isAdmin;
+  const Dashboard({
+    Key? key,
+  }) : super(key: key);
 
   @override
   _DashboardState createState() => _DashboardState();
@@ -16,6 +19,7 @@ class Dashboard extends StatefulWidget {
 
 class _DashboardState extends State<Dashboard> {
   FirebaseService _firebaseService = GetIt.I.get<FirebaseService>();
+
   @override
   void initState() {
     super.initState();
@@ -43,7 +47,7 @@ class _DashboardState extends State<Dashboard> {
           children: [
             "City Petro".text.make(),
             VxBox().width(5).make(),
-            "v2.1".text.sm.make()
+            'v${Startup.instance.localVersion}'.text.sm.make()
           ],
         ),
         actions: [
@@ -62,22 +66,22 @@ class _DashboardState extends State<Dashboard> {
           ),
         ).px20(),
       ])),
-          bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Dashboard',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.admin_panel_settings),
-            label: 'Admin Panel',
-          ),
-         
-        ],
-        currentIndex: 0,
-        //sselectedItemColor: Colors.amber[800],
-        onTap: (index)=>{},
-      ),
+      //     bottomNavigationBar: BottomNavigationBar(
+      //   items: const <BottomNavigationBarItem>[
+      //     BottomNavigationBarItem(
+      //       icon: Icon(Icons.home),
+      //       label: 'Dashboard',
+      //     ),
+      //     BottomNavigationBarItem(
+      //       icon: Icon(Icons.admin_panel_settings),
+      //       label: 'On H',
+      //     ),
+
+      //   ],
+      //   currentIndex: 0,
+      //   //sselectedItemColor: Colors.amber[800],
+      //   onTap: (index)=>{},
+      // ),
     );
   }
 }

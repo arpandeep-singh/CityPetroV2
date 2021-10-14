@@ -1,9 +1,9 @@
 import 'dart:convert';
 
-import 'package:city_petro/models/catalog.dart';
-import 'package:city_petro/utils/routes.dart';
-import 'package:city_petro/widgets/home_widgets/catalog_header.dart';
-import 'package:city_petro/widgets/home_widgets/catalog_list.dart';
+import 'package:CityPetro/models/catalog.dart';
+import 'package:CityPetro/utils/routes.dart';
+import 'package:CityPetro/widgets/home_widgets/catalog_header.dart';
+import 'package:CityPetro/widgets/home_widgets/catalog_list.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

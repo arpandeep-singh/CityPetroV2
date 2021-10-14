@@ -1,17 +1,23 @@
-import 'package:city_petro/models/grid_menu.dart';
+import 'package:CityPetro/main.dart';
+import 'package:CityPetro/models/grid_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:swipeable_page_route/swipeable_page_route.dart';
 import 'package:velocity_x/velocity_x.dart';
 
 class DashboardGridMenu extends StatelessWidget {
+  final bool isAdmin = Startup.instance.getUserRole;
+
+  //const DashboardGridMenu({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
+    var list = isAdmin ? GridMenuModel.adminItems : GridMenuModel.items;
     return GridView.builder(
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2, mainAxisSpacing: 0, crossAxisSpacing: 0),
-      itemCount: GridMenuModel.items.length,
+      itemCount: list.length,
       itemBuilder: (context, index) {
-        final item = GridMenuModel.items[index];
+        final item = list[index];
         return InkWell(
             onTap: () {},
             child: _GridMenuItem(
@@ -39,8 +45,7 @@ class _GridMenuItem extends StatelessWidget {
             Navigator.push(
               context,
               SwipeablePageRoute(
-                 canSwipe: false,
-                builder: (context) => menuItem.screen),
+                  canSwipe: false, builder: (context) => menuItem.screen),
             );
           },
           //     onTap: () => Navigator.pushNamed(
@@ -51,7 +56,11 @@ class _GridMenuItem extends StatelessWidget {
             child: MenuItemImage(
               image: menuItem.image,
             ),
-            footer: menuItem.title.text .textStyle(TextStyle(fontSize: 12)).center.make().py12(),
+            footer: menuItem.title.text
+                .textStyle(TextStyle(fontSize: 12))
+                .center
+                .make()
+                .py12(),
           ),
         ),
       ),

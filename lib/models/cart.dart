@@ -1,4 +1,4 @@
-import 'package:city_petro/core/store.dart';
+import 'package:CityPetro/core/store.dart';
 import 'package:velocity_x/velocity_x.dart';
 
 import 'catalog.dart';

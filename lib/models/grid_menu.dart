@@ -1,12 +1,11 @@
 import 'dart:convert';
-import 'package:city_petro/models/Load.dart';
-import 'package:city_petro/screens/add_load_page.dart';
-import 'package:city_petro/screens/admin_panel_screen.dart';
-import 'package:city_petro/screens/files_list.dart';
-import 'package:city_petro/screens/folder_list.dart';
-import 'package:city_petro/screens/reports_page.dart';
-import 'package:city_petro/screens/schedule_page.dart';
-import 'package:city_petro/screens/schedule_view.dart';
+import 'package:CityPetro/models/Load.dart';
+import 'package:CityPetro/screens/add_load_page.dart';
+import 'package:CityPetro/screens/admin_panel_screen.dart';
+import 'package:CityPetro/screens/files_list.dart';
+import 'package:CityPetro/screens/folder_list.dart';
+import 'package:CityPetro/screens/reports_page.dart';
+import 'package:CityPetro/screens/schedule_page.dart';
 import 'package:flutter/material.dart';
 
 class GridMenuModel {
@@ -52,12 +51,14 @@ class GridMenuModel {
         title: "Invoices",
         image: "assets/images/invoice.png",
         screen: FilesListPage(folder: "Invoices", type: "Invoices")),
-    GridMenuItem(
+   
+  ];
+
+  static List<GridMenuItem> adminItems = [...items,  GridMenuItem(
         id: 7,
         title: "Admin Panel",
         image: "assets/images/server.png",
-        screen: AdminPanel()),
-  ];
+        screen: AdminPanel()),];
 
   // Get Item by ID
   GridMenuItem getById(int id) =>

@@ -1,4 +1,4 @@
-import 'package:city_petro/models/catalog.dart';
+import 'package:CityPetro/models/catalog.dart';
 import 'package:flutter/material.dart';
 
 class ItemWidget extends StatelessWidget {

@@ -1,5 +1,5 @@
-import 'package:city_petro/services/firebase_service.dart';
-import 'package:city_petro/utils/extensions.dart';
+import 'package:CityPetro/services/firebase_service.dart';
+import 'package:CityPetro/utils/extensions.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get_it/get_it.dart';
 

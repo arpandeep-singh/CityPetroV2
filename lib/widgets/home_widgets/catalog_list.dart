@@ -1,5 +1,5 @@
-import 'package:city_petro/models/catalog.dart';
-import 'package:city_petro/screens/home_detail_page.dart';
+import 'package:CityPetro/models/catalog.dart';
+import 'package:CityPetro/screens/home_detail_page.dart';
 import 'package:flutter/material.dart';
 import 'package:velocity_x/velocity_x.dart';
 

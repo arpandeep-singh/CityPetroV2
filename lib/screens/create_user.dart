@@ -1,4 +1,4 @@
-import 'package:city_petro/authenticate/UserInfo.dart' as my;
+import 'package:CityPetro/authenticate/UserInfo.dart' as my;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -60,6 +60,8 @@ class _NewUserFormState extends State<NewUserForm> {
       }
     } on FirebaseAuthException catch (e) {
       showMessage(e.message.toString(), Colors.red);
+    } on Exception catch(e) {
+showMessage(e.toString(), Colors.red);
     }
     setState(() => loading = false);
   }

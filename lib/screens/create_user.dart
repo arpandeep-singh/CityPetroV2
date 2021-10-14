@@ -11,7 +11,7 @@ class CreateUserPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: "Create a new user".text.make(),
+        title: "Create a new user".text.textStyle(TextStyle(fontSize: 16)).make(),
       ),
       backgroundColor: context.canvasColor,
       body: SafeArea(

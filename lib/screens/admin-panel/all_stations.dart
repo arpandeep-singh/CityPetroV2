@@ -89,7 +89,7 @@ class _AllStationsPageState extends State<AllStationsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: "All Stations".text.make(),
+          title: "All Stations".text.textStyle(TextStyle(fontSize: 16)).make(),
         ),
         body: SafeArea(
           child: Column(

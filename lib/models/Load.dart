@@ -26,6 +26,7 @@ class Load {
   //Firebase use only
   String docId = "";
   double HST = 0.0;
+  DateTime dateCreated = DateTime.now();
 
   Load({
     required this.date,
@@ -54,6 +55,7 @@ class Load {
   factory Load.fromNewJson(Map<String, dynamic> json, {String docId = ""}) {
     Load load = new Load(date: DateTime.now());
     load.date = (json['date'] as Timestamp).toDate();
+    load.dateCreated =  (json['dateCreated'] as Timestamp).toDate();
     load.stationId = json['stationId'] ?? "-";
     load.city = json['city'] ?? "-";
     load.baseRate = int.parse(json['baseRate']?.toString() ?? "0");
@@ -82,8 +84,9 @@ class Load {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    print('WaitingCost: ${this.waitingCost}');
+    // print('WaitingCost: ${this.waitingCost}');
     data['date'] = DateTime(this.date.year, this.date.month, this.date.day);
+    data['dateCreated'] = DateTime.now();
     data['stationId'] = this.stationId;
     data['city'] = this.city;
     data['baseRate'] = this.baseRate;

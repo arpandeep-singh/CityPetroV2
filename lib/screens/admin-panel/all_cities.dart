@@ -21,11 +21,20 @@ class _AllCitiesPageState extends State<AllCitiesPage> {
   FirebaseService _firebaseService = GetIt.I.get<FirebaseService>();
   bool loading = true;
 
+  TextEditingController controller = new TextEditingController();
+  String filter ="";
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+     controller.addListener(() {
+      setState(() {
+        filter = controller.text;
+      });
+    });
     fetchData();
+      
   }
 
   void fetchData() async {
@@ -55,7 +64,7 @@ class _AllCitiesPageState extends State<AllCitiesPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: "All Cities".text.make(),
+          title: "All Cities".text.textStyle(TextStyle(fontSize: 16)).make(),
           actions: [
             IconButton(
                 onPressed: () => showCitySettingsPage(new MasterCity()),
@@ -67,7 +76,7 @@ class _AllCitiesPageState extends State<AllCitiesPage> {
             children: [
               CupertinoSearchTextField(
                 borderRadius: BorderRadius.circular(0),
-                //controller: controller,
+                controller: controller,
               ).p12(),
               loading
                   ? CupertinoActivityIndicator().expand()
@@ -130,7 +139,7 @@ class _AllCitiesPageState extends State<AllCitiesPage> {
     ));
   }
 
-  Widget buildCity(MasterCity city) => Slidable(
+  Widget buildCity(MasterCity city) => city.name.trim().toLowerCase().contains(filter.toLowerCase()) ?Slidable(
         actionPane: SlidableDrawerActionPane(),
         actionExtentRatio: 0.2,
         child: GestureDetector(
@@ -219,7 +228,7 @@ class _AllCitiesPageState extends State<AllCitiesPage> {
                 ],
               ).py(5),
             ]).p(10),
-          ).color(context.cardColor).make().cornerRadius(5).p(2).px(10),
+          ).color(context.cardColor).make().cornerRadius(0).p(2).px(10),
         ),
         // actions: [
         //   IconSlideAction(
@@ -240,5 +249,5 @@ class _AllCitiesPageState extends State<AllCitiesPage> {
               icon: Icons.delete,
               onTap: () => showDeleteDialog(city)),
         ],
-      );
+      ):Container();
 }

@@ -58,12 +58,20 @@ class _AddLoadState extends State<AddLoad> {
     scanDocument(fileSource);
 
     final ImagePicker _picker = ImagePicker();
-    XFile? file = await _picker.pickImage(source: source);
+    try {
+   XFile? file = await _picker.pickImage(
+      source: source,
+      imageQuality: 60,
+    );
     if (file != null) {
       setState(() {
         files.add(file);
       });
     }
+    } on Exception catch (e) {
+      showMessage(e.toString(), Colors.red);
+    }
+ 
   }
 
   void scanDocument(String source) {
@@ -99,7 +107,6 @@ class _AddLoadState extends State<AddLoad> {
     }
 
     form.save();
-    print('Load Data: ${load.toString()}');
     load.waitingCost = double.parse(
         ((load.waitingTime * config.waitingRate) / 60).toStringAsFixed(2));
     load.splitCost = (load.splitLoads * config.splitRate);
@@ -128,7 +135,7 @@ class _AddLoadState extends State<AddLoad> {
     //   if(widget.load!=null){
     //      this.load = widget.load;
     //   }
-      
+
     // });
     super.initState();
 
@@ -137,18 +144,16 @@ class _AddLoadState extends State<AddLoad> {
 
   void fetchAllCities() {
     setState(() => loading = true);
-    Future.delayed(Duration(milliseconds: 10)).then((_) => {
-          _firebaseService.getDailyReportConfig().then((configData) {
-            _firebaseService.getAllSites().then((list) {
-              setState(() {
-                //load = this.widget.load;
-                sites = list;
-                config = configData;
-                loading = false;
-              });
-            });
-          }),
+    _firebaseService.getDailyReportConfig().then((configData) {
+      _firebaseService.getAllSites().then((list) {
+        setState(() {
+          //load = this.widget.load;
+          sites = list;
+          config = configData;
+          loading = false;
         });
+      });
+    });
   }
 
   @override
@@ -156,7 +161,7 @@ class _AddLoadState extends State<AddLoad> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        title: "Add Load".text.make(),
+        title: "Add Load".text.textStyle(TextStyle(fontSize: 16)).make(),
       ),
       backgroundColor: context.canvasColor,
       body: SafeArea(
@@ -240,7 +245,7 @@ class _AddLoadState extends State<AddLoad> {
                                         },
                                       ),
                                     ),
-                                  ).cornerRadius(10),
+                                  ).cornerRadius(0),
                                 ],
                               ),
                               VxBox().make().h(10),
@@ -417,7 +422,7 @@ class _AddLoadState extends State<AddLoad> {
                             ],
                           ).p20(),
                         ).px12(),
-                      ).color(context.cardColor).make().cornerRadius(10),
+                      ).color(context.cardColor).make().cornerRadius(0),
                       VxBox().make().h(10),
                       VxBox(
                         child: Container(
@@ -477,11 +482,11 @@ class _AddLoadState extends State<AddLoad> {
                                     fillColor: Color(0xff1b66a9),
                                   ),
                                 ),
-                              ).cornerRadius(10)
+                              ).cornerRadius(0)
                             ],
                           ).p20(),
                         ).px12(),
-                      ).color(context.cardColor).make().cornerRadius(10),
+                      ).color(context.cardColor).make().cornerRadius(0),
                       VxBox().make().h(10),
                       VxBox(
                         child: Container(
@@ -557,7 +562,7 @@ class _AddLoadState extends State<AddLoad> {
                                     });
                                   },
                                 ),
-                              ).cornerRadius(10),
+                              ).cornerRadius(0),
                               VxBox().make().h(15),
                               "UPT LINK".text.textStyle(_style()).make(),
                               Container(
@@ -582,7 +587,7 @@ class _AddLoadState extends State<AddLoad> {
                                     return null;
                                   },
                                 ),
-                              ).cornerRadius(10),
+                              ).cornerRadius(0),
                               VxBox().make().h(15),
                               Row(
                                 mainAxisAlignment:
@@ -612,7 +617,7 @@ class _AddLoadState extends State<AddLoad> {
                                               openBottomSheet(context)),
                                       color: Colors.grey[100],
                                     ),
-                                  ).cornerRadius(10),
+                                  ).cornerRadius(0),
                                   files.isEmpty
                                       ? Text(
                                           '0 Documents',
@@ -638,11 +643,11 @@ class _AddLoadState extends State<AddLoad> {
                                     ? CupertinoActivityIndicator()
                                     : "SUBMIT".text.make(),
                                 onPressed: _submitForm,
-                              ).cornerRadius(10).wFull(context)
+                              ).cornerRadius(0).wFull(context)
                             ],
                           ).p20(),
                         ).px12(),
-                      ).color(context.cardColor).make().cornerRadius(10)
+                      ).color(context.cardColor).make().cornerRadius(0)
                     ],
                   ).px12().pOnly(top: 12),
                 ),

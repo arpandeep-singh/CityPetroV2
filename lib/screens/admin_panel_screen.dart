@@ -11,7 +11,7 @@ class AdminPanel extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: "Admin Panel".text.make(),
+        title: "Admin Panel".text.textStyle(TextStyle(fontSize: 16)).make(),
       ),
       body: SingleChildScrollView(
         child: Column(

@@ -42,8 +42,10 @@ class _DashboardState extends State<Dashboard> {
 
     return Scaffold(
       appBar: AppBar(
+        
         title: Row(
           crossAxisAlignment: CrossAxisAlignment.end,
+
           children: [
             "City Petro".text.make(),
             VxBox().width(5).make(),
@@ -66,6 +68,12 @@ class _DashboardState extends State<Dashboard> {
           ),
         ).px20(),
       ])),
+
+      // floatingActionButton: FloatingActionButton(
+      //   onPressed: () async{
+      //     await _firebaseService.migrateRates();
+      //   },
+      // ),
       //     bottomNavigationBar: BottomNavigationBar(
       //   items: const <BottomNavigationBarItem>[
       //     BottomNavigationBarItem(

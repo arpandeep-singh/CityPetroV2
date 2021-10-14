@@ -14,6 +14,10 @@ class MasterCity {
   //for firebase use only : update city
   String docId = "";
 
+  //For migration
+  List<String> stationsList = [];
+  String station = "";
+
   MasterCity(
       {this.name = "",
       this.rT1 = 0,
@@ -28,7 +32,7 @@ class MasterCity {
   MasterCity.fromJson(Map<String, dynamic> json, String id) {
     docId = id;
     name = json['name'].toString().capitalize();
-    rT1 =  int.parse(json['1']['rateToronto']?.toString() ?? "0");
+    rT1 = int.parse(json['1']['rateToronto']?.toString() ?? "0");
     rO1 = int.parse(json['1']['rateOakville']?.toString() ?? "0");
     rH1 = int.parse(json['1']['rateHamilton']?.toString() ?? "0");
     rN1 = int.parse(json['1']['rateNanticoke']?.toString() ?? "0");
@@ -36,6 +40,19 @@ class MasterCity {
     rO2 = int.parse(json['2']['rateOakville']?.toString() ?? "0");
     rH2 = int.parse(json['2']['rateHamilton']?.toString() ?? "0");
     rN2 = int.parse(json['2']['rateNanticoke']?.toString() ?? "0");
+  }
+
+  MasterCity.fromExistingJson(Map<String, dynamic> json) {
+    name = json['city'] !=null? json['city'].toString().trim().toLowerCase().capitalize() :"";
+    rT1 = int.parse(json['rateToronto'] ?? "0");
+    rO1 = int.parse(json['rateOakville'] ?? "0");
+    rH1 = int.parse(json['rateHamilton'] ?? "0");
+    rN1 = int.parse(json['rateNanticoke'] ?? "0");
+    rT2 = rT1;
+    rO2 = rO1;
+    rH2 = rH1;
+    rN2 = rN1;
+    station = json['stationID']!.toString();
   }
 
   Map<String, dynamic> toJson() {
@@ -61,9 +78,4 @@ class MasterCity {
     // TODO: implement toString
     return '$name $rT1 $rO1 $rH1 $rT2 $rO2 $rH2 $rN2';
   }
-
-  
-
 }
-
-

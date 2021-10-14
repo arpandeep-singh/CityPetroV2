@@ -20,6 +20,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart' as fb_storage;
 import 'package:image_picker/image_picker.dart';
+import 'package:darq/darq.dart';
 
 class FirebaseService {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
@@ -27,7 +28,7 @@ class FirebaseService {
 
   //Authentication
   Future<String> signIn(String email, String password) async {
-    print("Logging in with " + email + " " + password);
+    //"Logging in with " + email + " " + password);
     UserCredential authResult = await _firebaseAuth.signInWithEmailAndPassword(
         email: email.trim(), password: password.trim());
     User user = authResult.user!;
@@ -53,7 +54,7 @@ class FirebaseService {
     var doc =
         await _firestore.collection("Users").doc(this.myAppUser.uid).get();
     var isAdmin = doc.data()?['isAdmin'] ?? false;
-    print('User is Admin? $isAdmin');
+    //print('User is Admin? $isAdmin');
     return isAdmin;
   }
 
@@ -63,7 +64,7 @@ class FirebaseService {
   // }
 
   Future<List<String>> getDocsFolders(String type) async {
-    print('Type in folders: $type');
+    //print('Type in folders: $type');
     var qds = await _firestore
         .collection("Docs")
         .doc(type)
@@ -82,9 +83,11 @@ class FirebaseService {
           .doc(this.myAppUser.uid)
           .collection("Invoices")
           .get();
-
-      documents =
-          qd.docs.map((e) => PdfDoc(name: e.id, url: e.data()['url'])).toList();
+      if (qd.docs.isNotEmpty) {
+        documents = qd.docs
+            .map((e) => PdfDoc(name: e.id, url: e.data()['URL']))
+            .toList();
+      }
     } else {
       var qds = await _firestore
           .collection("Docs")
@@ -102,7 +105,7 @@ class FirebaseService {
   }
 
   Future<List<Load>> getAllLoads(DateTime from, DateTime to) async {
-    print('From Date: ${from.toLocal()} To: ${to.toLocal()}');
+    //print('From Date: ${from.toLocal()} To: ${to.toLocal()}');
     var qds = await _firestore
         //.collection("Users")
         //.doc(this.myAppUser.uid)
@@ -113,7 +116,12 @@ class FirebaseService {
         .get();
     List<Load> loadList =
         qds.docs.map((l) => Load.fromNewJson(l.data(), docId: l.id)).toList();
-    loadList.sort((a, b) => (b.date).compareTo(a.date));
+    loadList.sort((a, b) {
+      int cmp = (b.date).compareTo(a.date);
+      if (cmp != 0) return cmp;
+      return b.dateCreated.compareTo(a.dateCreated);
+
+    });
     return loadList;
   }
 
@@ -142,12 +150,9 @@ class FirebaseService {
   }
 
   Future<void> deleteSingleStation(String cityId, String stationId) async {
-    return await _firestore
-        .collection("Cities")
-        .doc(cityId)
-        .collection("Stations")
-        .doc(stationId)
-        .delete();
+    return await _firestore.collection("Cities").doc(cityId).update({
+      "stations": FieldValue.arrayRemove([stationId])
+    });
   }
 
   Future<String> createNewUser(UserData.UserInfo info) async {
@@ -165,7 +170,7 @@ class FirebaseService {
     await userInfo.user
         ?.updateDisplayName('${info.firstName}#${info.lastName}#${info.level}');
 
-    print(userInfo.user?.uid);
+    //print(userInfo.user?.uid);
     await _firestore
         .collection("Users")
         .doc(userInfo.user?.uid)
@@ -184,20 +189,22 @@ class FirebaseService {
   }
 
   Future<List<Station>> getAllStationsInCity(String cityId) async {
-    var list = await _firestore
+    var doc = await _firestore
         .collection("Cities")
         .doc(cityId)
-        .collection("Stations")
+        //.collection("Stations")
         .get();
-    var names =
-        list.docs.map((doc) => Station.fromJson(doc.data(), doc.id)).toList();
-    return names;
+    var names = List.castFrom(doc.data()?['stations'] as List);
+    List<Station> stations =
+        names.map((s) => Station(name: s, id: cityId)).toList();
+    //list.docs.map((doc) => Station.fromJson(doc.data(), doc.id)).toList();
+    return stations;
   }
 
   Future<String> getUserLevel() async {
     String level = "1";
     try {
-      print('Username: ${_firebaseAuth.currentUser?.displayName}');
+      // print('Username: ${_firebaseAuth.currentUser?.displayName}');
       //level = _firebaseAuth.currentUser?.displayName?.split("#")[2] ?? "1";
       String uid = _firebaseAuth.currentUser!.uid;
       var doc = await _firestore.collection("Users").doc(uid).get();
@@ -216,26 +223,13 @@ class FirebaseService {
     var citiesList = await _firestore.collection("Cities").get();
 
     List<Site> siteList = [];
-    Future<List<List<Site>>> listOfSitesFuture =
-        Future.wait(citiesList.docs.map((c) async {
-      Map<String, dynamic> cMap = c.data();
-      var qds = await _firestore
-          .collection("Cities")
-          .doc(c.id)
-          .collection("Stations")
-          .get();
-      cMap["stations"] =
-          qds.docs.map((s) => s.data()['stationId'].toString()).toList();
-
-      City city = City.fromJson(cMap, level);
+    List<List<Site>> siteList1 = citiesList.docs.map((c) {
+      City city = City.fromJson(c.data(), level);
       return city.stations.map((sid) => Site.fromCity(city, sid)).toList();
-    }).toList());
+    }).toList();
 
-    //[[Site1, Site2],[Site3, Site4]]
-    var listOfListofSites = await listOfSitesFuture;
-
-    //[Site1, Site2, Site3, Site4]
-    siteList = listOfListofSites.expand((i) => i).toList();
+    //[[Site1, Site2],[Site3, Site4]] ---> [Site1, Site2, Site3, Site4]
+    siteList = siteList1.expand((i) => i).toList();
 
     return siteList;
   }
@@ -262,12 +256,12 @@ class FirebaseService {
     var user = postUri.queryParameters['dn'];
     var shiftID = postUri.queryParameters['sd'];
 
-    String postUrl = 'https://gw.upt.cloud:8081/upload3444?user=$user&sd=$shiftID';
-    print('postUrl: $postUrl');
+    String postUrl = 'https://gw.upt.cloud:8081/upload?user=$user&sd=$shiftID';
+    // print('postUrl: $postUrl');
     //throw new DioError(requestOptions: postUrl);
     try {
       Response response = await dio.post(postUrl, data: {"img": encodedFile});
-      print('UPt Response ${response.toString()}');
+      //print('UPt Response ${response.toString()}');
       if (response.statusCode != 200) {
         return new UptResponse(status: response.statusCode!);
       }
@@ -283,7 +277,7 @@ class FirebaseService {
     } on DioError catch (e) {
       return new UptResponse(
           status: -1,
-          localLink: 'CP SERVER ISSUEe}',
+          localLink: 'CP SERVER ISSUE',
           remoteLink: e.error.toString());
     }
   }
@@ -313,7 +307,7 @@ class FirebaseService {
             .toList());
       } on DioError catch (err) {
         //throw err;
-        print('Paperwork not sent');
+        //print('Paperwork not sent');
       }
     }
 
@@ -332,7 +326,7 @@ class FirebaseService {
     if (uploadedDocResponses.isNotEmpty) {
       uploadedDocResponses.forEach((res) async {
         var fileDoc = await doc.collection("files").add(res.toJson());
-        print('File Doc ${fileDoc.id}');
+        // print('File Doc ${fileDoc.id}');
       });
     }
     return doc.id;
@@ -343,7 +337,7 @@ class FirebaseService {
     var qds = await _firestore.collection("SiteMaps").get();
     List<String> docFolders = qds.docs.map((doc) => doc.id).toList();
     docFolders.forEach((folder) async {
-      print('Moving $folder');
+      // print('Moving $folder');
       var qd = await _firestore
           .collection("SiteMaps")
           .doc(folder)
@@ -362,7 +356,7 @@ class FirebaseService {
             .doc(doc.name)
             .set(doc.toJson());
       });
-      print('Moved $folder');
+      // print('Moved $folder');
     });
   }
 
@@ -370,7 +364,7 @@ class FirebaseService {
     var qds = await _firestore.collection("DipCharts").get();
     List<String> docFolders = qds.docs.map((doc) => doc.id).toList();
     docFolders.forEach((folder) async {
-      print('Moving $folder');
+      //print('Moving $folder');
       var qd = await _firestore
           .collection("DipCharts")
           .doc(folder)
@@ -389,13 +383,13 @@ class FirebaseService {
             .doc(doc.name)
             .set(doc.toJson());
       });
-      print('Moved $folder');
+      //print('Moved $folder');
     });
   }
 
   Future<List<Shift>> getSchedule(DateTime from, DateTime to) async {
-    print('To: ${to.toLocal()}');
-    print('From: ${from.toLocal()}');
+    //'To: ${to.toLocal()}');
+    // print('From: ${from.toLocal()}');
     var qds = await _firestore
         .collection("Schedule")
         .doc("report")
@@ -420,24 +414,43 @@ class FirebaseService {
   }
 
   Future<String> createOrUpdateCity(MasterCity city) async {
-    print('City Recived : $city');
+    //print('City Recived : $city');
     CollectionReference citiesCol = _firestore.collection("Cities");
     if (city.docId.isEmpty) {
       var doc = await citiesCol.add(city.toJson());
       return doc.id;
     } else {
-      await citiesCol.doc(city.docId).set(city.toJson());
+      await citiesCol
+          .doc(city.docId)
+          .set(city.toJson(), SetOptions(merge: true));
       return city.docId;
     }
   }
 
-  Future<String> createNewStationInCity(String name, String cityId) async {
-    var doc = await _firestore
-        .collection("Cities")
-        .doc(cityId)
-        .collection("Stations")
-        .add({"stationId": name});
-    return doc.id;
+  Future<void> createNewStationInCity(String name, String cityId) async {
+    return await _firestore.collection("Cities").doc(cityId).update({
+      "stations": FieldValue.arrayUnion([name])
+    });
+  }
+
+  Future<void> migrateRates() async {
+    var qds = await _firestore.collection("Rates").get();
+    List<MasterCity> list =
+        qds.docs.map((doc) => MasterCity.fromExistingJson(doc.data())).toList();
+
+    var distinctCities = list.distinct((c) => c.name).toList();
+
+    list.forEach((city) {
+      int index = distinctCities.indexWhere((m) => m.name == city.name);
+      distinctCities[index].stationsList.add(city.station);
+    });
+
+    distinctCities.forEach((city) async {
+      await _firestore
+          .collection("Cities")
+          .doc(city.name)
+          .update({"stations": FieldValue.arrayUnion(city.stationsList)});
+    });
   }
 }
 

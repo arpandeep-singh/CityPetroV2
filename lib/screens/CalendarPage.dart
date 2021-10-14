@@ -13,7 +13,7 @@ class _CalendarPageState extends State<CalendarPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: "Schedule".text.make(),),
+      appBar: AppBar(title: "Schedule".text.textStyle(TextStyle(fontSize: 16)).make(),),
       body: Container(
     child: SfCalendar(
       view: CalendarView.schedule,

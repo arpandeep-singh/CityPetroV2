@@ -12,7 +12,7 @@ class ItemWidget extends StatelessWidget {
       elevation: 0,
       child: ListTile(
         onTap: () {
-          print("Pressed");
+          //print("Pressed");
         },
         leading: Image.network(item.image),
         title: Text(item.name),

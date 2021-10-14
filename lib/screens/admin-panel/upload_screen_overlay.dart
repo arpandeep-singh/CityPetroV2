@@ -35,11 +35,11 @@ class _UploadOverlayScreenState extends State<UploadOverlayScreen> {
   }
 
   void submitLoad() async {
-    print('Load Recived: ${this.widget.load}');
+    //print('Load Recived: ${this.widget.load}');
     try {
       setState(() => loading = true);
       String savedDocId = await saveDataToDb();
-      print('Doc Id :$savedDocId');
+     // print('Doc Id :$savedDocId');
       setState(() => success = savedDocId.isNotEmpty);
     } on Exception catch (e) {
       setState(() => success = false);

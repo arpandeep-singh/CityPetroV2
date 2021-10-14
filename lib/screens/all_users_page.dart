@@ -10,7 +10,7 @@ class AllUsersPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: "All Users".text.make(),
+        title: "All Users".text.textStyle(TextStyle(fontSize: 16)).make(),
         actions: [ IconButton(
             icon: const Icon(Icons.add),         
             onPressed: () =>Navigator.of(context).pushNamed(MyRoutes.createUser)

@@ -133,7 +133,7 @@ class _ReportsPageState extends State<ReportsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: "Reports".text.make(),
+        title: "Reports".text.textStyle(TextStyle(fontSize: 16)).make(),
       ),
       backgroundColor: context.canvasColor,
       body: SafeArea(
@@ -221,7 +221,7 @@ class _ReportsPageState extends State<ReportsPage> {
                                     .make()
                               ],
                             ).py(2),
-                          ).cornerRadius(10).p(5),
+                          ).cornerRadius(0).p(5),
                         ).expand(),
                         RawMaterialButton(
                           onPressed: () async {
@@ -257,7 +257,7 @@ class _ReportsPageState extends State<ReportsPage> {
                                     .make()
                               ],
                             ).py(2),
-                          ).cornerRadius(10).p(5),
+                          ).cornerRadius(0).p(5),
                         ).expand(),
                       ],
                     )

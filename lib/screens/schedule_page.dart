@@ -89,7 +89,7 @@ class _SchedulePageState extends State<SchedulePage> {
       ],
     ).p12().px(8))
         .color(context.cardColor)
-        .make().cornerRadius(10).px(10);
+        .make().cornerRadius(0).px(10);
   }
 
    TextStyle style() => TextStyle(fontSize: 12);

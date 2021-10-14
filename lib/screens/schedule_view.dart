@@ -94,7 +94,7 @@ class _ScheduleViewCalendarState extends State<ScheduleViewCalendar> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: "SCHEDULE".text.make(),
+        title: "SCHEDULE".text.textStyle(TextStyle(fontSize: 16)).make(),
       ),
       body: 
           Container(

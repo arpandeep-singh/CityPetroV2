@@ -45,7 +45,7 @@ class _LoginPageState extends State<LoginPage> {
       // }
     } on FirebaseAuthException catch (e) {
       showMessage("Login Failed!", Colors.red);
-      print("Login Failed " + e.message!);
+      //print("Login Failed " + e.message!);
     }
     if (mounted) {
       setState(() {

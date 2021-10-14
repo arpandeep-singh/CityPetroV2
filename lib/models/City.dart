@@ -20,7 +20,7 @@ class City {
   factory City.fromJson(Map<String, dynamic> json, String level) {
     return City(
         name: json['name'].toString().capitalize(),
-        stations: json['stations']??[],
+        stations: json['stations']!=null?List.castFrom(json['stations'] as List ):[],
         rateToronto: int.parse(json[level]['rateToronto'].toString()),
         rateOakville: int.parse(json[level]['rateOakville'].toString()),
         rateNanticoke: int.parse(json[level]['rateNanticoke'].toString()),

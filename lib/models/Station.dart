@@ -4,8 +4,8 @@ class Station extends Comparable{
 
   Station({this.name="", this.id=""});
 
-  Station.fromJson(Map<String, dynamic> json, String docId) {
-    name = json['stationId'];
+  Station.fromJson(String name, String docId) {
+    name = name;
     id =docId;
   }
 

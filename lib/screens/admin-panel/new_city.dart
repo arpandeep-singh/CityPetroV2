@@ -43,7 +43,7 @@ class _CitySettingsPageState extends State<CitySettingsPage> {
             ? "City created successfuly"
             : "City updated successfuly"
         : "Something went wrong";
-    
+
     await Future.delayed(Duration(milliseconds: 300));
     showMessage(message);
   }
@@ -72,10 +72,14 @@ class _CitySettingsPageState extends State<CitySettingsPage> {
     } else if (this.newStation.isEmpty) {
       showMessage("Station cannot be empty");
     } else {
-      String sId = await _firebaseService.createNewStationInCity(
-          this.newStation.trim(), widget.city.docId);
-      String message =
-          sId.isNotEmpty ? "Station added successfuly" : "Something went wrong";
+      String message = "";
+      try {
+        await _firebaseService.createNewStationInCity(
+            this.newStation.trim(), widget.city.docId);
+        message = "Station added successfuly";
+      } on Exception {
+        message = "Something went wrong";
+      }
 
       showMessage(message);
     }
@@ -95,7 +99,7 @@ class _CitySettingsPageState extends State<CitySettingsPage> {
       appBar: AppBar(
         title: "Create or update city"
             .text
-            .textStyle(TextStyle(fontSize: 14))
+            .textStyle(TextStyle(fontSize: 16))
             .make(),
       ),
       body: SingleChildScrollView(

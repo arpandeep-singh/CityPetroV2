@@ -49,7 +49,7 @@ class _FilesListPageState extends State<FilesListPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: widget.folder.text.make(),
+        title: widget.folder.text.textStyle(TextStyle(fontSize: 14)).make(),
       ),
       backgroundColor: context.canvasColor,
       body: SafeArea(
@@ -63,12 +63,7 @@ class _FilesListPageState extends State<FilesListPage> {
                 ? CupertinoActivityIndicator().expand()
                 : files.isEmpty
                     ? "No Files".text.make()
-                    : ListView.separated(
-                      physics: BouncingScrollPhysics(),
-                        separatorBuilder: (BuildContext context, int index) =>
-                            SizedBox(
-                              height: 5,
-                            ),
+                    : ListView.builder(
                         itemCount: files.length,
                         itemBuilder: (context, index) {
                           return _buildFile(index);}).expand(),
@@ -80,7 +75,7 @@ class _FilesListPageState extends State<FilesListPage> {
 
   Widget _buildFile(int index){
     var file = files[index];
-    return file.name.toLowerCase().contains(filter.toLowerCase()) ? GestureDetector(
+    return file.name.trim().toLowerCase().contains(filter.toLowerCase()) ? GestureDetector(
                             onTap: () {
                               Navigator.push(
                                   context,
@@ -103,7 +98,7 @@ class _FilesListPageState extends State<FilesListPage> {
                                 //subtitle: "Brampton".text.make(),
                                 //trailing: CupertinoActivityIndicator().px12(),
                               ),
-                            ).color(context.cardColor).make().cornerRadius(5).px(10),
-                          ): new Container();
+                            ).color(context.cardColor).make().cornerRadius(0).px(10).py(2),
+                          ): Container();
   }
 }

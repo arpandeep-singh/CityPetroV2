@@ -14,7 +14,7 @@ class SchedulePage extends StatefulWidget {
 }
 
 class _SchedulePageState extends State<SchedulePage> {
-  FirebaseService _firebaseService = GetIt.I.get<FirebaseService>();
+  // FirebaseService _firebaseService = GetIt.I.get<FirebaseService>();
   ScheduleReport schedule = new ScheduleReport();
   bool loading = true;
 

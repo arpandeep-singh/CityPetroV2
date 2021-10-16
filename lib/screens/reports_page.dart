@@ -8,7 +8,8 @@ import 'package:swipeable_page_route/swipeable_page_route.dart';
 import 'package:velocity_x/velocity_x.dart';
 
 class ReportsPage extends StatefulWidget {
-  const ReportsPage({Key? key}) : super(key: key);
+  final String? userId;
+  const ReportsPage({Key? key, this.userId}) : super(key: key);
 
   @override
   _ReportsPageState createState() => _ReportsPageState();
@@ -36,8 +37,8 @@ class _ReportsPageState extends State<ReportsPage> {
 
   void loadResults() {
     setState(() => loading = true);
-    Future.delayed(new Duration(milliseconds: 240)).then((value) {
-      summary.refreshData().then((_) {
+    Future.delayed(new Duration(milliseconds: 250)).then((value) {
+      summary.refreshData(widget.userId).then((_) {
         setState(() => loading = false);
       });
     });
@@ -198,7 +199,7 @@ class _ReportsPageState extends State<ReportsPage> {
                                 return;
                               } else if (toExisting != picked) {
                                 summary.fromDate = picked;
-                                await summary.refreshData();
+                                await summary.refreshData(widget.userId);
                                 setState(() {});
                               }
                             }
@@ -235,7 +236,7 @@ class _ReportsPageState extends State<ReportsPage> {
                               var toExisting = summary.toDate;
                               if (toExisting != picked) {
                                 summary.toDate = picked;
-                                await summary.refreshData();
+                                await summary.refreshData(widget.userId);
                                 setState(() {});
                               }
                             }
@@ -283,8 +284,7 @@ class _ReportsPageState extends State<ReportsPage> {
                             actionPane: SlidableDrawerActionPane(),
                             actionExtentRatio: 0.2,
                             child: GestureDetector(
-                              onTap: () =>
-                                  openDetailScreen(load),
+                              onTap: () => openDetailScreen(load),
                               onLongPress: () {
                                 showDeleteDialog(load);
                               },
@@ -299,30 +299,33 @@ class _ReportsPageState extends State<ReportsPage> {
                                         .make(),
                                     HStack([
                                       VxBox(
-                                              child:
-                                                  '${load.stationId}'
-                                                      .text
-                                                      .textStyle(style())
-                                                      .make()
-                                                      .px(10))
+                                              child: '${load.stationId}'
+                                                  .text
+                                                  .textStyle(style())
+                                                  .make()
+                                                  .px(10))
                                           .make()
                                           .backgroundColor(
                                               Colors.green.withOpacity(0.2))
                                           .cornerRadius(5),
                                       // VxBox().width(5).make(),
                                       VxBox(
-                                              child:
-                                                  '${load.city}'
-                                                      .text
-                                                      .textStyle(style())
-                                                      .make()
-                                                      .px(10))
+                                              child: '${load.city}'
+                                                  .text
+                                                  .textStyle(style())
+                                                  .make()
+                                                  .px(10))
                                           .make()
                                           .backgroundColor(
                                               Color(0xB78A0A).withOpacity(0.2))
                                           .cornerRadius(5)
                                           .px(5),
-                                      load.isOnHold? Icon(Icons.warning, color: Colors.yellow[600],):Container()
+                                      load.isOnHold
+                                          ? Icon(
+                                              Icons.warning,
+                                              color: Colors.yellow[600],
+                                            )
+                                          : Container()
                                     ]),
                                   ]),
                                   '\$${load.totalCostWithHST.toStringAsFixed(2)}'
@@ -350,8 +353,7 @@ class _ReportsPageState extends State<ReportsPage> {
                                   caption: 'Delete',
                                   color: Colors.red,
                                   icon: Icons.delete,
-                                  onTap: () =>
-                                      showDeleteDialog(load)),
+                                  onTap: () => showDeleteDialog(load)),
                             ],
                           );
                         }).expand(),

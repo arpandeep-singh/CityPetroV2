@@ -71,7 +71,7 @@ class _AllStationsPageState extends State<AllStationsPage> {
 
   void deleteStation(Station station) async {
     context.pop();
-    await _firebaseService.deleteSingleStation(this.widget.cityId, station.id);
+    await _firebaseService.deleteSingleStation(this.widget.cityId, station.name);
     stationsList.remove(station);
     setState(() => {});
     showMessage("Deleted Successfully", Colors.green);

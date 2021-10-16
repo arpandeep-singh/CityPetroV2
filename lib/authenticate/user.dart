@@ -6,7 +6,7 @@ class LocalUser {
   LocalUser({required this.uid, required this.name});
 
   factory LocalUser.fromFireBaseUser(User user) {
-    return LocalUser(uid: user.uid, name: user.displayName!);
+    return LocalUser(uid: user.uid, name: user.displayName??"");
   }
 
   factory LocalUser.emptyUser() {

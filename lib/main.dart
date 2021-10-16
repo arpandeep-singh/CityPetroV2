@@ -49,18 +49,17 @@ class MyApp extends StatelessWidget {
               stream: _firebaseService.authStateChanges(),
               builder: (_, _snapshot) {
                 bool isSignedIn = _snapshot.data != null;
+               
                 // bool isAdmin = false;
                 // if (isSignedIn) {
-                //   isAdmin = !_snapshot.data!.displayName!
-                //       .toString()
-                //       .toLowerCase()
-                //       .contains("admin");
+                //   isAdmin = _firebaseService.isUserExist;
                 // }
 
                 return FutureBuilder(
                     future: Startup.instance.checkUserAdmin(isSignedIn),
                     builder: (context, AsyncSnapshot<void> ss) {
                       //bool isAdmin = ss.data != null ? ss.data! : false;
+                      //bool userExist = ss.data!=null? ss.data :false;
                       if (ss.connectionState == ConnectionState.waiting) {
                         return Splash();
                       } else {
@@ -169,21 +168,23 @@ class Init {
 class Startup {
   Startup._();
   static final instance = Startup._();
-  bool userAdmin = false;
+  bool _isAdmin = false;
+  bool get userAdmin => _isAdmin;
+  set userAdmin(bool val) {
+    this._isAdmin = val;
+  }
+
   String localVersion = "";
   FirebaseService _firebaseService = GetIt.I.get<FirebaseService>();
   Future<void> checkUserAdmin(bool isSignedIn) async {
-
     if (isSignedIn) {
-      
       bool isAdmin = await _firebaseService.isUserAdmin;
       this.setUserAdmin = isAdmin;
 
-      PackageInfo packageInfo = await PackageInfo.fromPlatform();  
+      PackageInfo packageInfo = await PackageInfo.fromPlatform();
       this.localVersion = packageInfo.version;
-    
     }
-    
+
     await Future.delayed(Duration(milliseconds: 800));
   }
 

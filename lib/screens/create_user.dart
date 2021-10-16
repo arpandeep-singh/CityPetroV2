@@ -55,13 +55,13 @@ class _NewUserFormState extends State<NewUserForm> {
     try {
       String uid = await newUser.createUser();
       if (!uid.isEmptyOrNull) {
-        print('NEW USER: $uid');
+        //print('NEW USER: $uid');
         showMessage("Account created successfully", Colors.green);
       }
     } on FirebaseAuthException catch (e) {
       showMessage(e.message.toString(), Colors.red);
     } on Exception catch(e) {
-showMessage(e.toString(), Colors.red);
+      showMessage(e.toString(), Colors.red);
     }
     setState(() => loading = false);
   }
@@ -103,7 +103,7 @@ showMessage(e.toString(), Colors.red);
                             });
                           },
                         ),
-                      ).cornerRadius(10)
+                      ).cornerRadius(0)
                     ]),
                   ).make().expand(),
                   VxBox().make().w(10),
@@ -131,7 +131,7 @@ showMessage(e.toString(), Colors.red);
                             });
                           },
                         ),
-                      ).cornerRadius(10)
+                      ).cornerRadius(0)
                     ]),
                   ).make().expand(),
                 ],
@@ -161,7 +161,7 @@ showMessage(e.toString(), Colors.red);
                     });
                   },
                 ),
-              ).cornerRadius(10),
+              ).cornerRadius(0),
               VxBox().make().h(10),
               "Contact".text.make(),
               Container(
@@ -182,15 +182,15 @@ showMessage(e.toString(), Colors.red);
                     });
                   },
                 ),
-              ).cornerRadius(10),
+              ).cornerRadius(0),
               VxBox().make().h(10),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  "Password".text.make(),
-                  newUser.password.text.make(),
-                ],
-              ),
+              // Row(
+              //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //   children: [
+              //     "Password".text.make(),
+              //     newUser.password.text.make(),
+              //   ],
+              // ),
               VxBox().make().h(10),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -242,12 +242,12 @@ showMessage(e.toString(), Colors.red);
                           : "SUBMIT".text.make(),
                       disabledColor: context.accentColor.withOpacity(0.5),
                       onPressed: loading ? null : _submitForm)
-                  .cornerRadius(10)
+                  .cornerRadius(0)
                   .wFull(context)
             ],
           ).p20(),
         ),
       ).px12(),
-    ).color(context.cardColor).make().cornerRadius(10);
+    ).color(context.cardColor).make().cornerRadius(0);
   }
 }

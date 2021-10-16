@@ -14,6 +14,7 @@ import 'package:CityPetro/models/Site.dart';
 import 'package:CityPetro/models/Station.dart';
 import 'package:CityPetro/models/admin/master_city.dart';
 import 'package:CityPetro/models/migration/Doc.dart';
+import 'package:CityPetro/utils/extensions.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -54,8 +55,13 @@ class FirebaseService {
     var doc =
         await _firestore.collection("Users").doc(this.myAppUser.uid).get();
     var isAdmin = doc.data()?['isAdmin'] ?? false;
-    //print('User is Admin? $isAdmin');
     return isAdmin;
+  }
+
+  Future<bool> get isUserExist async {
+    var doc =
+        await _firestore.collection("Users").doc(this.myAppUser.uid).get();
+    return doc.exists;
   }
 
   // //signout
@@ -104,13 +110,12 @@ class FirebaseService {
     return documents;
   }
 
-  Future<List<Load>> getAllLoads(DateTime from, DateTime to) async {
-    //print('From Date: ${from.toLocal()} To: ${to.toLocal()}');
+  Future<List<Load>> getAllLoads(
+      DateTime from, DateTime to, String? userId) async {
+    String uid = userId ?? this.myAppUser.uid;
     var qds = await _firestore
-        //.collection("Users")
-        //.doc(this.myAppUser.uid)
         .collection("Loads")
-        .where('userId', isEqualTo: this.myAppUser.uid)
+        .where('userId', isEqualTo: uid)
         .where('date', isGreaterThanOrEqualTo: from)
         .where('date', isLessThanOrEqualTo: to)
         .get();
@@ -120,7 +125,6 @@ class FirebaseService {
       int cmp = (b.date).compareTo(a.date);
       if (cmp != 0) return cmp;
       return b.dateCreated.compareTo(a.dateCreated);
-
     });
     return loadList;
   }
@@ -136,10 +140,10 @@ class FirebaseService {
   }
 
   Future<void> deleteSingleLoad(String docId) async {
-    String uid = this.myAppUser.uid;
+    // String uid = this.myAppUser.uid;
     return await _firestore
-        .collection("Users")
-        .doc(uid)
+        //.collection("Users")
+        //.doc(uid)
         .collection("Loads")
         .doc(docId)
         .delete();
@@ -149,35 +153,48 @@ class FirebaseService {
     return await _firestore.collection("Cities").doc(cityId).delete();
   }
 
-  Future<void> deleteSingleStation(String cityId, String stationId) async {
+  Future<void> deleteSingleStation(String cityId, String station) async {
     return await _firestore.collection("Cities").doc(cityId).update({
-      "stations": FieldValue.arrayRemove([stationId])
+      "stations": FieldValue.arrayRemove([station])
     });
   }
 
   Future<String> createNewUser(UserData.UserInfo info) async {
     //print('User : ${info.}');
-    // FirebaseApp app = await Firebase.initializeApp(
-    //     name: 'SecondaryApp', options: Firebase.app().options);
-    //Create User
-    UserCredential userInfo =
-        await _firebaseAuth.createUserWithEmailAndPassword(
-            email: info.email, password: info.password);
-    //await FirebaseAuth.instanceFor(app: app)
+    FirebaseApp app = await Firebase.initializeApp(
+        name: 'SecondaryFbApp', options: Firebase.app().options);
 
-    //this._firebaseAuth.currentUser.
-    // Store important info
-    await userInfo.user
-        ?.updateDisplayName('${info.firstName}#${info.lastName}#${info.level}');
+    try {
+      //Create User
+      UserCredential userInfo = await FirebaseAuth.instanceFor(app: app)
+          .createUserWithEmailAndPassword(
+              email: info.email, password: info.getPassword());
+      await userInfo.user?.updateDisplayName('${info.firstName.capitalize()}');
+      await _firestore
+          .collection("Users")
+          .doc(userInfo.user?.uid)
+          .set(info.toJson());
 
-    //print(userInfo.user?.uid);
-    await _firestore
-        .collection("Users")
-        .doc(userInfo.user?.uid)
-        .set(info.toJson());
+      await app.delete();
+      return userInfo.user!.uid;
+    } on FirebaseAuthException {
+      await app.delete();
+    } on FirebaseException {
+      await app.delete();
+    } on Exception {
+      await app.delete();
+    }
 
-    //await app.delete();
-    return userInfo.user!.uid;
+    return "";
+  }
+
+  Future<List<UserData.UserInfo>> getAllUsers() async {
+    var qds = await _firestore.collection("Users").get();
+    var list = qds.docs
+        .map((d) => UserData.UserInfo.fromJson(d.data(), d.id))
+        .toList();
+    list.sort((a, b) => a.firstName.compareTo(b.firstName));
+    return list;
   }
 
   Future<List<MasterCity>> getAllCities() async {
@@ -452,6 +469,13 @@ class FirebaseService {
           .update({"stations": FieldValue.arrayUnion(city.stationsList)});
     });
   }
+
+  // Future<void> updateDisplayName() async {
+  //   //await _firebaseAuth.currentUser!.updateDisplayName("Sukhwinder");
+  //   //String name = _firebaseAuth.currentUser?.displayName ?? "na";
+  //   //print('Name null? $name');
+   
+  // }
 }
 
 //enum CitySetting { created, updated, failed }

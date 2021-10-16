@@ -11,7 +11,7 @@ class DashboardGridMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var list = isAdmin ? GridMenuModel.adminItems : GridMenuModel.items;
+    List<GridMenuItem> list = isAdmin ? GridMenuModel.adminItems : GridMenuModel.normalUserItems;
     return GridView.builder(
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2, mainAxisSpacing: 0, crossAxisSpacing: 0),

@@ -13,23 +13,21 @@ class Report {
   double totalHST = 0;
   double totalWaiting = 0;
 
-  Future<void> refreshData() async {
+  Future<void> refreshData(String? uid) async {
     this.totalEarnings = 0;
     this.totalHST = 0;
     this.totalWaiting = 0;
 
-    this.loads = await _firebaseService.getAllLoads(this.fromDate, this.toDate);
+    this.loads = await _firebaseService.getAllLoads(this.fromDate, this.toDate, uid);
     loads.forEach((load) {
-      if(!load.isOnHold){
-      totalEarnings += load.totalCostWithHST;
-      totalHST += load.HST;
-      totalWaiting += load.waitingCost;
+      if (!load.isOnHold) {
+        totalEarnings += load.totalCostWithHST;
+        totalHST += load.HST;
+        totalWaiting += load.waitingCost;
       }
     });
     return;
   }
-
-  
 
   Future<void> deleteLoad(Load load) async {
     //await Future.delayed(Duration(seconds: 1));
